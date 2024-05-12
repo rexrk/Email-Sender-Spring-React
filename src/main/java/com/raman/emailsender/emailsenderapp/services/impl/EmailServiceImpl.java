@@ -6,12 +6,18 @@ import jakarta.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+
 @Service
 public class EmailServiceImpl implements EmailService {
 
@@ -77,6 +83,29 @@ public class EmailServiceImpl implements EmailService {
             mimeMessageHelper.addAttachment(file.getName(), file);
             javaMailSender.send(mimeMessage);
         } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    @Override
+    public void sendEmailWithAttachment(String to, String subject, String body, InputStream is) {
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        try {
+            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
+            mimeMessageHelper.setFrom(EMAIL_FROM);
+            mimeMessageHelper.setTo(to);
+            mimeMessageHelper.setSubject(subject);
+            mimeMessageHelper.setText(body);
+
+            File file = new File("src/main/resources/Attachments/test.png");
+            Files.copy(is, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            FileSystemResource fsr = new FileSystemResource(file);
+            mimeMessageHelper.addAttachment(fsr.getFilename(), fsr);
+
+            javaMailSender.send(mimeMessage);
+            logger.info("Email sent successfully to {}", to);
+        } catch (MessagingException | IOException e) {
             throw new RuntimeException(e);
         }
 

@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 
 @SpringBootTest
 public class EmailSenderTest {
@@ -39,5 +42,20 @@ public class EmailSenderTest {
                 "Attachments",
                 new File("C:\\Users\\krama\\OneDrive\\Pictures\\Screenshots\\Screenshot 2024-03-24 201740.png")
         );
+    }
+
+    @Test
+    void sendEmailWithAttachmentWithStreamTest() {
+        File file = new File("C:\\Users\\krama\\OneDrive\\Pictures\\Screenshots\\Screenshot 2024-03-24 201740.png");
+        try {
+            InputStream inputStream = new FileInputStream(file);
+            emailService.sendEmailWithAttachment(
+                    "ramankumar4272@gmail.com",
+                    "Email from Spring",
+                    "Attachments", inputStream
+                    );
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

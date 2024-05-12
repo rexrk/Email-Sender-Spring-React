@@ -1,6 +1,7 @@
 package com.raman.emailsender.emailsenderapp.services;
 
 import java.io.File;
+import java.io.InputStream;
 
 public interface EmailService {
     //single email
@@ -14,5 +15,8 @@ public interface EmailService {
 
     //send email with attachments
     void sendEmailWithAttachment(String to, String subject, String body, File file);
+
+    //send email with attachments
+    void sendEmailWithAttachment(String to, String subject, String body, InputStream is);
 
 }
