@@ -1,4 +1,4 @@
-package com.raman.emailsender.emailsenderapp.services;
+package com.raman.emailsender.emailsenderapp.entity;
 
 import lombok.*;
 

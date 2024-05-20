@@ -32,7 +32,6 @@ public class EmailServiceImpl implements EmailService {
         this.logger = LoggerFactory.getLogger(EmailService.class);
     }
 
-
     @Override
     public void sendEmail(String to, String subject, String body) {
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
