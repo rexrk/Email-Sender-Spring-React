@@ -23,7 +23,6 @@ function EmailSender() {
     event.preventDefault();
     try {
       setSending(true);
-      console.log(emailData)
       await sendEmail(emailData);
       toast.success("Email sent successfully");
       handleReset();
@@ -37,6 +36,7 @@ function EmailSender() {
 
   function handleReset() {
     setEmailData(initialEmailData);
+    editorRef.current.setContent("")
   }
 
   return (
