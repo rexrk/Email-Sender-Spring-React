@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { sendEmail } from "../api/email.service";
+import { Editor } from "@tinymce/tinymce-react";
 
 function EmailSender() {
   const initialEmailData = {
@@ -8,6 +9,8 @@ function EmailSender() {
     subject: "",
     body: "",
   };
+
+  const editorRef = useRef(null);
 
   const [emailData, setEmailData] = useState(initialEmailData);
   const [sending, setSending] = useState(false);
@@ -19,18 +22,16 @@ function EmailSender() {
   async function handleSubmit(event) {
     event.preventDefault();
     try {
-      setSending(true)
+      setSending(true);
+      console.log(emailData)
       await sendEmail(emailData);
       toast.success("Email sent successfully");
       handleReset();
-      
     } catch (error) {
       console.log(error);
       toast.error("Error Sending email");
-      
     } finally {
-      setSending(false)
-      
+      setSending(false);
     }
   }
 
@@ -40,11 +41,15 @@ function EmailSender() {
 
   return (
     <div className="w-full min-h-screen flex justify-center items-center">
-      <div className="email_card bg-white md:w-1/3 w-full mx-10 p-5 rounded-lg shadow dark:bg-gray-700">
+      <div className="email_card bg-white md:w-1/2 w-full mx-10 p-5 rounded-lg shadow dark:bg-gray-700">
         {/* headings */}
 
-        <h1 className="text-gray-800 dark:text-gray-50 text-3xl flex justify-center">Email Spring App</h1>
-        <p className="text-gray-300 flex justify-center my-4">Compose New Email</p>
+        <h1 className="text-gray-800 dark:text-gray-50 text-3xl flex justify-center">
+          Email Spring App
+        </h1>
+        <p className="text-gray-700 dark:text-gray-300 flex justify-center my-4">
+          Compose New Email
+        </p>
 
         {/* form */}
 
@@ -98,7 +103,8 @@ function EmailSender() {
           >
             Body:
           </label>
-          <textarea
+          {/* >>simple old text box */}
+          {/* <textarea
             value={emailData.body}
             onChange={(event) => handleChanges(event, "body")}
             id="body"
@@ -106,7 +112,32 @@ function EmailSender() {
             className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             placeholder="Write Your Message"
             required
-          ></textarea>
+          ></textarea> */}
+
+          {/* rich editor text area*/}
+          <Editor
+            onEditorChange={(event) => {
+              setEmailData({
+                ...emailData,
+                body:editorRef.current.getContent(),
+              });
+            }}
+            placeholder="Write Your Message"
+            apiKey="085zkqbsvn5a736t9h8882ke3598wtat3isckibxfi070p5q"
+            onInit={(_evt, editor) => (editorRef.current = editor)}
+            init={{
+              plugins:
+                "anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed linkchecker a11ychecker tinymcespellchecker permanentpen powerpaste advtable advcode editimage advtemplate mentions tinycomments tableofcontents footnotes mergetags autocorrect typography inlinecss markdown",
+              toolbar:
+                "undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat",
+              tinycomments_mode: "embedded",
+              tinycomments_author: "Author name",
+              mergetags_list: [
+                { value: "First.Name", title: "First Name" },
+                { value: "Email", title: "Email" },
+              ],
+            }}
+          />
 
           {/* loader */}
 
@@ -115,7 +146,7 @@ function EmailSender() {
               <div role="status">
                 <svg
                   aria-hidden="true"
-                  class="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+                  className="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
                   viewBox="0 0 100 101"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
@@ -129,7 +160,6 @@ function EmailSender() {
                     fill="currentFill"
                   />
                 </svg>
-                <span class="sr-only">Loading...</span>
               </div>
             </div>
           )}
@@ -138,7 +168,7 @@ function EmailSender() {
 
           <div className="button_container mt-4 flex justify-center">
             <button
-            disabled={sending}
+              disabled={sending}
               type="submit"
               className="bg-blue-600 text-white hover:bg-blue-900 px-4 py-2 rounded"
             >
