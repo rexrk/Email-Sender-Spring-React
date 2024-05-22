@@ -1,7 +1,8 @@
 package com.raman.emailsender.emailsenderapp.services.impl;
 
+import com.raman.emailsender.emailsenderapp.entity.Messages;
 import com.raman.emailsender.emailsenderapp.services.EmailService;
-import jakarta.mail.MessagingException;
+import jakarta.mail.*;
 import jakarta.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +18,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
+import java.util.Properties;
 
 @Service
 public class EmailServiceImpl implements EmailService {
@@ -108,5 +111,40 @@ public class EmailServiceImpl implements EmailService {
             throw new RuntimeException(e);
         }
 
+    }
+
+    //Receive emails
+    @Value("${mail.store.protocol}")
+    String protocol;
+    @Value("${mail.imaps.host}")
+    String host;
+    @Value("${mail.imaps.port}")
+    String port;
+
+    @Value("${spring.mail.username}")
+    String username;
+    @Value("${spring.mail.password}")
+    String password;
+    @Override
+    public List<Messages> getInboxMessages() {
+        Properties props = new Properties();
+        props.setProperty("mail.store.protocol", protocol);
+        props.setProperty("mail.imaps.port", port);
+        props.setProperty("mail.imaps.host", host);
+
+        try {
+            Session session = Session.getInstance(props, null);
+            Store store = session.getStore();
+            store.connect(username, password);
+            Folder inbox = store.getFolder("INBOX");
+            System.out.println("connected");
+            inbox.open(Folder.READ_ONLY);
+            Message[] messages = inbox.getMessages();
+            store.close();
+            e
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
+        return null;
     }
 }
