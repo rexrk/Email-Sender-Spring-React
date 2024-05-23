@@ -141,7 +141,6 @@ public class EmailServiceImpl implements EmailService {
             inbox.open(Folder.READ_ONLY);
             Message[] messages = inbox.getMessages();
             store.close();
-            e
         } catch (MessagingException e) {
             throw new RuntimeException(e);
         }
