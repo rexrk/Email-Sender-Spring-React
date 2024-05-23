@@ -58,4 +58,11 @@ public class EmailSenderTest {
             throw new RuntimeException(e);
         }
     }
+
+
+    //receiving email test
+    @Test
+    void getInboxMessagesTest() {
+        emailService.getInboxMessages();
+    }
 }
